@@ -10,6 +10,14 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true
+  },
+  resolve: {
+    alias: {
+      // Ensure pdfjs-dist resolves correctly
+    }
+  },
+  optimizeDeps: {
+    include: ['pdfjs-dist']
   }
 })
 

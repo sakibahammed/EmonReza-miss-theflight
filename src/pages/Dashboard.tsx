@@ -1,9 +1,134 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Icon } from '../components/Icon'
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isDragging, setIsDragging] = useState(false)
+
+  // Dynamic greeting based on time of day
+  const getGreeting = (): string => {
+    const hour = new Date().getHours()
+    
+    if (hour >= 5 && hour < 12) {
+      return 'Good Morning'
+    } else if (hour >= 12 && hour < 17) {
+      return 'Good Afternoon'
+    } else if (hour >= 17 && hour < 21) {
+      return 'Good Evening'
+    } else {
+      return 'Good Night'
+    }
+  }
+
+  // Handle PDF file upload
+  const handleFileUpload = async (file: File) => {
+    // Validate file type
+    if (file.type !== 'application/pdf') {
+      alert('Please upload a valid PDF file')
+      return
+    }
+
+    // Validate file size (e.g., max 50MB)
+    const maxSize = 50 * 1024 * 1024 // 50MB in bytes
+    if (file.size > maxSize) {
+      alert('File size is too large. Maximum size is 50MB')
+      return
+    }
+
+    try {
+      // Read file as ArrayBuffer for PDF.js
+      const arrayBuffer = await file.arrayBuffer()
+      
+      // Store file metadata in sessionStorage
+      sessionStorage.setItem('uploadedPdfName', file.name)
+      sessionStorage.setItem('uploadedPdfSize', file.size.toString())
+      
+      // Store file data as base64 for sessionStorage
+      // Convert ArrayBuffer to base64 using a more reliable chunked approach
+      try {
+        const uint8Array = new Uint8Array(arrayBuffer)
+        let binaryString = ''
+        const chunkSize = 8192 // Process in chunks to avoid stack overflow
+        
+        for (let i = 0; i < uint8Array.length; i += chunkSize) {
+          const chunk = uint8Array.slice(i, i + chunkSize)
+          // Build string character by character to avoid call stack issues
+          for (let j = 0; j < chunk.length; j++) {
+            binaryString += String.fromCharCode(chunk[j])
+          }
+        }
+        
+        const base64 = btoa(binaryString)
+        console.log('PDF encoded to base64, size:', base64.length, 'characters, original:', arrayBuffer.byteLength, 'bytes')
+        sessionStorage.setItem('uploadedPdfData', base64)
+        console.log('PDF data stored in sessionStorage successfully')
+      } catch (base64Error) {
+        console.error('Error encoding file to base64:', base64Error)
+        alert('Error processing file. Please try a smaller PDF file (max 50MB).')
+        return
+      }
+
+      // Navigate to edit page with file metadata
+      navigate('/edit', { 
+        state: { 
+          pdfFileName: file.name,
+          pdfFileSize: file.size
+        } 
+      })
+    } catch (error) {
+      console.error('Error reading file:', error)
+      alert('Error reading file. Please try again.')
+    }
+  }
+
+  // Handle file input change
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      handleFileUpload(file)
+    }
+    // Reset input so same file can be selected again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  // Handle browse button click
+  const handleBrowseClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    fileInputRef.current?.click()
+  }
+
+  // Drag and drop handlers
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+
+    const file = e.dataTransfer.files[0]
+    if (file) {
+      handleFileUpload(file)
+    }
+  }
 
   const recentFiles = [
     { name: 'Annual_Report_2023.pdf', date: 'Oct 24, 2023', size: '2.4 MB', time: '2 hours ago' },
@@ -121,7 +246,7 @@ const Dashboard: React.FC = () => {
           {/* Greeting & Hero Upload */}
           <section className="max-w-5xl mx-auto w-full flex flex-col gap-4 md:gap-6">
             <div>
-              <h1 className="text-[#111318] dark:text-white tracking-tight text-xl md:text-2xl lg:text-3xl font-bold leading-tight">Good Morning, Alex</h1>
+              <h1 className="text-[#111318] dark:text-white tracking-tight text-xl md:text-2xl lg:text-3xl font-bold leading-tight">{getGreeting()}, Alex</h1>
               <p className="text-[#616f89] dark:text-gray-400 text-sm md:text-base font-normal leading-normal mt-1 md:mt-2">
                 Manage your documents efficiently. What would you like to do today?
               </p>
@@ -129,17 +254,44 @@ const Dashboard: React.FC = () => {
             
             {/* Upload Area */}
             <div 
-              onClick={() => navigate('/edit')}
-              className="flex flex-col items-center justify-center gap-4 md:gap-6 rounded-xl border-2 border-dashed border-[#dbdfe6] dark:border-gray-700 bg-white dark:bg-[#1a202c] px-4 md:px-6 py-8 md:py-12 hover:border-primary/50 transition-colors group cursor-pointer shadow-sm"
+              onDragEnter={handleDragEnter}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              className={`flex flex-col items-center justify-center gap-4 md:gap-6 rounded-xl border-2 border-dashed ${
+                isDragging 
+                  ? 'border-primary bg-primary/5 dark:bg-primary/10' 
+                  : 'border-[#dbdfe6] dark:border-gray-700 bg-white dark:bg-[#1a202c]'
+              } px-4 md:px-6 py-8 md:py-12 hover:border-primary/50 transition-colors group cursor-pointer shadow-sm`}
             >
-              <div className="p-3 md:p-4 rounded-full bg-blue-50 dark:bg-blue-900/20 text-primary group-hover:scale-110 transition-transform duration-300">
+              {/* Hidden file input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="application/pdf"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+
+              <div className={`p-3 md:p-4 rounded-full ${
+                isDragging 
+                  ? 'bg-primary/20 dark:bg-primary/30' 
+                  : 'bg-blue-50 dark:bg-blue-900/20'
+              } text-primary group-hover:scale-110 transition-transform duration-300`}>
                 <Icon name="cloud_upload" className="text-3xl md:text-4xl" />
               </div>
               <div className="flex max-w-[480px] flex-col items-center gap-2">
-                <p className="text-[#111318] dark:text-white text-base md:text-lg font-bold leading-tight text-center">Upload new document</p>
-                <p className="text-[#616f89] dark:text-gray-400 text-xs md:text-sm text-center px-2">Drag & drop PDF files here, or click to browse</p>
+                <p className="text-[#111318] dark:text-white text-base md:text-lg font-bold leading-tight text-center">
+                  {isDragging ? 'Drop PDF file here' : 'Upload new document'}
+                </p>
+                <p className="text-[#616f89] dark:text-gray-400 text-xs md:text-sm text-center px-2">
+                  Drag & drop PDF files here, or click to browse
+                </p>
               </div>
-              <button className="flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-9 md:h-10 px-4 md:px-6 bg-primary hover:bg-blue-700 text-white text-xs md:text-sm font-bold shadow-md transition-all">
+              <button 
+                onClick={handleBrowseClick}
+                className="flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-9 md:h-10 px-4 md:px-6 bg-primary hover:bg-blue-700 text-white text-xs md:text-sm font-bold shadow-md transition-all"
+              >
                 Browse Files
               </button>
             </div>

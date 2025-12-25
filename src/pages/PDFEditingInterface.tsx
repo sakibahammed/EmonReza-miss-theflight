@@ -1,9 +1,75 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Icon } from '../components/Icon'
+import PDFViewer from '../components/PDFViewer/PDFViewer'
 
 const PDFEditingInterface: React.FC = () => {
   const navigate = useNavigate()
+  const location = useLocation()
+  const [pdfFileName, setPdfFileName] = useState<string>('Contract_Draft_v2.pdf')
+  const [pdfFileData, setPdfFileData] = useState<ArrayBuffer | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(0)
+  const [zoomLevel, setZoomLevel] = useState(100)
+  const [scale, setScale] = useState(1.5)
+  const [rotation, setRotation] = useState(0)
+
+  // Convert zoom percentage to scale (100% = 1.0, 150% = 1.5, etc.)
+  const handleZoomIn = () => {
+    setZoomLevel(prev => {
+      const newZoom = Math.min(prev + 25, 300) // Max 300%
+      setScale(newZoom / 100)
+      return newZoom
+    })
+  }
+
+  const handleZoomOut = () => {
+    setZoomLevel(prev => {
+      const newZoom = Math.max(prev - 25, 50) // Min 50%
+      setScale(newZoom / 100)
+      return newZoom
+    })
+  }
+
+  // Get uploaded PDF file from navigation state or sessionStorage
+  useEffect(() => {
+    // Check navigation state first (file metadata passed via navigate)
+    const state = location.state as { pdfFileName?: string; pdfFileSize?: number } | null
+    if (state?.pdfFileName) {
+      setPdfFileName(state.pdfFileName)
+    }
+
+    // Check sessionStorage for file data
+    const storedName = sessionStorage.getItem('uploadedPdfName')
+    if (storedName) {
+      setPdfFileName(storedName)
+      
+      // Retrieve PDF data from sessionStorage (stored as base64)
+      const storedData = sessionStorage.getItem('uploadedPdfData')
+      if (storedData) {
+        try {
+          // Convert base64 back to ArrayBuffer
+          const binaryString = atob(storedData)
+          const len = binaryString.length
+          const bytes = new Uint8Array(len)
+          for (let i = 0; i < len; i++) {
+            bytes[i] = binaryString.charCodeAt(i)
+          }
+          // Create a new ArrayBuffer by copying the data to avoid detachment
+          const arrayBuffer = new ArrayBuffer(bytes.length)
+          const view = new Uint8Array(arrayBuffer)
+          view.set(bytes)
+          console.log('PDF data loaded from sessionStorage, size:', arrayBuffer.byteLength, 'bytes')
+          setPdfFileData(arrayBuffer)
+        } catch (error) {
+          console.error('Error converting stored PDF data:', error)
+          alert('Error loading PDF data. Please try uploading again.')
+        }
+      } else {
+        console.warn('No PDF data found in sessionStorage')
+      }
+    }
+  }, [location.state])
 
   return (
     <div className="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white overflow-hidden h-screen flex flex-col">
@@ -18,7 +84,7 @@ const PDFEditingInterface: React.FC = () => {
           </button>
           <div className="flex flex-col min-w-0 flex-1">
             <div className="flex items-center gap-1 md:gap-2">
-              <h1 className="text-slate-900 dark:text-white font-bold text-xs md:text-sm lg:text-base tracking-tight truncate">Contract_Draft_v2.pdf</h1>
+              <h1 className="text-slate-900 dark:text-white font-bold text-xs md:text-sm lg:text-base tracking-tight truncate">{pdfFileName}</h1>
               <span className="px-1.5 md:px-2 py-0.5 rounded text-[9px] md:text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700 shrink-0">
                 EDITING
               </span>
@@ -27,14 +93,32 @@ const PDFEditingInterface: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-1.5 md:gap-3 shrink-0">
-          <div className="hidden md:flex items-center text-sm font-medium text-slate-600 dark:text-slate-400 mr-4">
-            <button className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-900 dark:text-white">
-              <Icon name="remove" className="text-[20px]" />
+          <div className="hidden md:flex items-center text-xs md:text-sm font-medium text-slate-600 dark:text-slate-400 mr-4 gap-2">
+            <button 
+              onClick={handleZoomOut}
+              className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-900 dark:text-white transition-colors"
+              title="Zoom Out"
+            >
+              <Icon name="remove" className="text-base" />
             </button>
-            <span className="w-12 text-center">100%</span>
-            <button className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-900 dark:text-white">
-              <Icon name="add" className="text-[20px]" />
+            <span className="w-12 text-center">{zoomLevel}%</span>
+            <button 
+              onClick={handleZoomIn}
+              className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-900 dark:text-white transition-colors"
+              title="Zoom In"
+            >
+              <Icon name="add" className="text-base" />
             </button>
+            <button 
+              onClick={() => setRotation(prev => (prev + 90) % 360)}
+              className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-900 dark:text-white transition-colors ml-2"
+              title="Rotate 90°"
+            >
+              <Icon name="rotate_right" className="text-base" />
+            </button>
+            {totalPages > 0 && (
+              <span className="px-2 ml-2">Page {currentPage} of {totalPages}</span>
+            )}
           </div>
           <button className="hidden md:flex items-center justify-center h-9 px-4 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-semibold transition-colors gap-2">
             <Icon name="share" className="text-[18px]" />
@@ -171,100 +255,61 @@ const PDFEditingInterface: React.FC = () => {
             </div>
           </div>
 
-          {/* PDF Canvas Area */}
-          <div className="flex-1 overflow-auto bg-background-light dark:bg-[#0f1115] relative p-2 md:p-4 lg:p-8 flex justify-center">
-            {/* The PDF Page */}
-            <div className="w-full max-w-full md:max-w-[600px] lg:max-w-[850px] bg-white text-slate-900 min-h-[600px] md:min-h-[800px] lg:min-h-[1100px] pdf-page-shadow rounded-sm relative selection:bg-primary/20 selection:text-primary mb-16 md:mb-20">
-              {/* Page Content Simulation */}
-              <div className="p-4 md:p-8 lg:p-16 flex flex-col h-full font-serif leading-relaxed text-xs md:text-sm lg:text-[15px] text-justify text-[#2c2c2c]">
-                {/* Header */}
-                <div className="flex justify-between items-end border-b-2 border-black pb-4 mb-10">
-                  <div>
-                    <h2 className="text-2xl font-bold tracking-wide font-sans text-black">SERVICE AGREEMENT</h2>
-                    <p className="text-xs text-slate-500 font-sans mt-1">REF: CONTRACT-2023-8842</p>
-                  </div>
-                  <div className="text-right font-sans text-xs text-slate-500">
-                    <p>Date: October 24, 2023</p>
-                    <p>Page 1 of 12</p>
-                  </div>
-                </div>
-                {/* Clause 1 */}
-                <div className="mb-6 relative group/clause">
-                  <h3 className="font-bold text-black uppercase text-sm mb-2 font-sans">1. Scope of Services</h3>
-                  <p className="mb-2">
-                    This Agreement ("Agreement") is made and entered into as of the date first set forth above (the "Effective Date") by and between <strong className="bg-blue-100 dark:bg-blue-900/30 px-1 rounded-sm cursor-text text-primary">TechGlobal Solutions Inc.</strong> ("Provider") and <strong className="bg-blue-100 dark:bg-blue-900/30 px-1 rounded-sm cursor-text text-primary">Future Enterprise Ltd.</strong> ("Client").
-                  </p>
-                  <p>
-                    The Provider agrees to perform the services described in <span className="bg-yellow-200/80 dark:bg-yellow-600/40 px-0.5 rounded-sm border-b-2 border-yellow-400 dark:border-yellow-500 cursor-pointer relative group/highlight">
-                      Exhibit A attached hereto (the "Services").
-                      <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded shadow-lg opacity-0 group-hover/highlight:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">
-                        Highlight added by You
-                      </span>
-                    </span>
-                    Provider shall perform the Services in a professional manner and in accordance with the industry standards.
-                  </p>
-                  {/* Comment Indicator on Side - Hidden on mobile */}
-                  <div className="hidden md:block absolute -right-12 top-0 cursor-pointer hover:scale-110 transition-transform">
-                    <div className="w-8 h-8 bg-yellow-100 border border-yellow-300 rounded-lg shadow-sm flex items-center justify-center text-yellow-700">
-                      <Icon name="comment" className="text-[18px]" />
-                    </div>
-                  </div>
-                </div>
-                {/* Clause 2 */}
-                <div className="mb-6">
-                  <h3 className="font-bold text-black uppercase text-sm mb-2 font-sans">2. Term and Termination</h3>
-                  <p className="mb-2">
-                    This Agreement shall commence on the Effective Date and shall continue for a period of <span className="bg-primary/20 text-primary font-bold px-1 py-0.5 rounded border border-primary border-dashed relative">
-                      12 months
-                      <span className="absolute -top-2 -right-2 bg-primary text-white text-[10px] px-1 rounded-full">!</span>
-                    </span>, unless earlier terminated in accordance with the provisions hereof.
-                  </p>
-                  <p className="text-slate-400 line-through decoration-red-500 decoration-2">
-                    Either party may terminate this Agreement upon thirty (30) days prior written notice to the other party.
-                  </p>
-                  <p className="text-primary mt-2 italic text-sm border-l-2 border-primary pl-3 bg-primary/5 py-1">
-                    [Proposed Change]: Either party may terminate this Agreement upon sixty (60) days prior written notice, subject to a termination fee.
-                  </p>
-                </div>
-                {/* Clause 3 */}
-                <div className="mb-6">
-                  <h3 className="font-bold text-black uppercase text-sm mb-2 font-sans">3. Payment Terms</h3>
-                  <p className="mb-2">
-                    Client shall pay Provider for the Services at the rates set forth in Exhibit A. Payment obligations are non-cancelable and fees paid are non-refundable. Client shall pay all invoiced amounts within thirty (30) days after the date of Provider's invoice.
-                  </p>
-                  <div className="my-6 p-4 border border-slate-200 bg-slate-50 rounded flex items-center gap-4">
-                    <div 
-                      className="h-16 w-24 bg-cover bg-center rounded border border-slate-300"
-                      style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDgz1gKu4qs6Scqe7yLTBvhHvxd-bEiVA1rxPB-QKGv8snJEuEG7dkuxcg5Uzkm6zwxrL0d3wROQeB70Y4UycAjJiS6wCL2IxjpDpOrEsHNVrA2Sofrrqbv-Wh42SZ3j91zmQgCTj4zi_KqnhcN4VsHZwaJC11L9n7sjvt5im6jb-HojFCQqKKq7u8NwUBp_hDLeqEtW5XoMlmCTTbN81U-GabsQsKsLEgexx17JbSUzITF0xweaCT1KypbCvKGLUWRxQ-dY-hoAx67")' }}
-                    />
-                    <div>
-                      <p className="text-xs font-bold text-slate-400 uppercase">Signed by</p>
-                      <p className="text-sm font-semibold">John Doe, CEO</p>
-                      <p className="text-xs text-slate-500">Oct 24, 2023 14:30 PM</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* PDF Canvas Area - Using PDFViewer Component */}
+          <PDFViewer 
+            pdfData={pdfFileData}
+            fileName={pdfFileName}
+            currentPage={currentPage}
+            scale={scale}
+            rotation={rotation}
+            onPageChange={(page, total) => {
+              setCurrentPage(page)
+              setTotalPages(total)
+            }}
+            onScaleChange={(newScale) => {
+              setScale(newScale)
+              setZoomLevel(Math.round(newScale * 100))
+            }}
+          />
 
           {/* Floating Pagination Controls */}
-          <div className="fixed bottom-4 md:bottom-6 left-1/2 md:left-1/2 md:ml-32 transform -translate-x-1/2 flex items-center bg-white dark:bg-slate-800 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 p-1 z-50">
-            <button className="w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors">
-              <Icon name="chevron_left" className="text-base md:text-[20px]" />
-            </button>
-            <div className="px-2 md:px-4 text-xs md:text-sm font-medium text-slate-700 dark:text-slate-200 tabular-nums">
-              <span className="hidden sm:inline">Page 1 of 12</span>
-              <span className="sm:hidden">1/12</span>
+          {totalPages > 0 && (
+            <div className="fixed bottom-4 md:bottom-6 left-1/2 md:left-1/2 md:ml-32 transform -translate-x-1/2 flex items-center bg-white dark:bg-slate-800 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 p-1 z-50">
+              <button 
+                onClick={() => {
+                  if (currentPage > 1) {
+                    setCurrentPage(prev => prev - 1)
+                  }
+                }}
+                disabled={currentPage === 1}
+                className="w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Icon name="chevron_left" className="text-base md:text-[20px]" />
+              </button>
+              <div className="px-2 md:px-4 text-xs md:text-sm font-medium text-slate-700 dark:text-slate-200 tabular-nums">
+                <span className="hidden sm:inline">Page {currentPage} of {totalPages}</span>
+                <span className="sm:hidden">{currentPage}/{totalPages}</span>
+              </div>
+              <button 
+                onClick={() => {
+                  if (currentPage < totalPages) {
+                    setCurrentPage(prev => prev + 1)
+                  }
+                }}
+                disabled={currentPage === totalPages}
+                className="w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Icon name="chevron_right" className="text-base md:text-[20px]" />
+              </button>
+              <div className="w-px h-3 md:h-4 bg-slate-200 dark:bg-slate-600 mx-1"></div>
+              <button 
+                className="w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors" 
+                title="Grid View"
+              >
+                <Icon name="grid_view" className="text-base md:text-[18px]" />
+              </button>
             </div>
-            <button className="w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors">
-              <Icon name="chevron_right" className="text-base md:text-[20px]" />
-            </button>
-            <div className="w-px h-3 md:h-4 bg-slate-200 dark:bg-slate-600 mx-1"></div>
-            <button className="w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors" title="Grid View">
-              <Icon name="grid_view" className="text-base md:text-[18px]" />
-            </button>
-          </div>
+          )}
         </main>
       </div>
     </div>
