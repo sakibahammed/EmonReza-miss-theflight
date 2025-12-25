@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Icon } from '../components/Icon'
 import PDFViewer from '../components/PDFViewer/PDFViewer'
@@ -10,26 +10,39 @@ const PDFEditingInterface: React.FC = () => {
   const [pdfFileData, setPdfFileData] = useState<ArrayBuffer | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
-  const [zoomLevel, setZoomLevel] = useState(100)
-  const [scale, setScale] = useState(1.5)
+  const [zoomLevel, setZoomLevel] = useState(100) // Start at 100% (normal size)
+  const [scale, setScale] = useState(1.0) // Default scale (100% - normal size)
   const [rotation, setRotation] = useState(0)
 
   // Convert zoom percentage to scale (100% = 1.0, 150% = 1.5, etc.)
-  const handleZoomIn = () => {
+  // Use useCallback to prevent re-renders
+  const handleZoomIn = useCallback(() => {
     setZoomLevel(prev => {
       const newZoom = Math.min(prev + 25, 300) // Max 300%
       setScale(newZoom / 100)
       return newZoom
     })
-  }
+  }, [])
 
-  const handleZoomOut = () => {
+  const handleZoomOut = useCallback(() => {
     setZoomLevel(prev => {
       const newZoom = Math.max(prev - 25, 50) // Min 50%
       setScale(newZoom / 100)
       return newZoom
     })
-  }
+  }, [])
+
+  // Memoize the page change handler to prevent re-renders
+  const handlePageChange = useCallback((page: number, total: number) => {
+    setCurrentPage(page)
+    setTotalPages(total)
+  }, [])
+
+  // Memoize the scale change handler
+  const handleScaleChange = useCallback((newScale: number) => {
+    setScale(newScale)
+    setZoomLevel(Math.round(newScale * 100))
+  }, [])
 
   // Get uploaded PDF file from navigation state or sessionStorage
   useEffect(() => {
@@ -262,14 +275,11 @@ const PDFEditingInterface: React.FC = () => {
             currentPage={currentPage}
             scale={scale}
             rotation={rotation}
-            onPageChange={(page, total) => {
-              setCurrentPage(page)
-              setTotalPages(total)
-            }}
-            onScaleChange={(newScale) => {
-              setScale(newScale)
-              setZoomLevel(Math.round(newScale * 100))
-            }}
+            zoomLevel={zoomLevel}
+            onZoomIn={handleZoomIn}
+            onZoomOut={handleZoomOut}
+            onPageChange={handlePageChange}
+            onScaleChange={handleScaleChange}
           />
 
           {/* Floating Pagination Controls */}

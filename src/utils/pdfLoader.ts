@@ -73,7 +73,7 @@ export const renderPage = async (
   pdfDoc: PDFDocumentProxy,
   pageNumber: number,
   canvas: HTMLCanvasElement,
-  scale: number = 1.5,
+  scale: number = 1.0, // Default scale (100% - normal size)
   rotation: number = 0
 ): Promise<{ promise: Promise<void>; cancel: () => void }> => {
   const page = await pdfDoc.getPage(pageNumber)

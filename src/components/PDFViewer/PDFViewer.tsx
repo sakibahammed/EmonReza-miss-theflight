@@ -11,6 +11,9 @@ interface PDFViewerProps {
   rotation?: number
   onPageChange?: (page: number, total: number) => void
   onScaleChange?: (scale: number) => void
+  onZoomIn?: () => void
+  onZoomOut?: () => void
+  zoomLevel?: number
 }
 
 const PDFViewer: React.FC<PDFViewerProps> = ({
@@ -21,6 +24,9 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
   rotation = 0,
   onPageChange,
   onScaleChange,
+  onZoomIn,
+  onZoomOut,
+  zoomLevel = 100,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const renderTaskRef = useRef<{ cancel: () => void } | null>(null)
@@ -29,7 +35,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
   const [error, setError] = useState<string | null>(null)
   const [internalCurrentPage, setInternalCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
-  const [internalScale, setInternalScale] = useState(1.5)
+  const [internalScale, setInternalScale] = useState(1.0) // Default 100% scale (normal size)
 
   // Use external props if provided, otherwise use internal state
   const currentPage = externalCurrentPage ?? internalCurrentPage
@@ -73,6 +79,8 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
   useEffect(() => {
     if (!pdfDoc || !canvasRef.current || currentPage < 1 || currentPage > totalPages) return
 
+    let isMounted = true
+
     // Cancel any previous render task
     if (renderTaskRef.current) {
       try {
@@ -84,24 +92,39 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
     }
 
     const renderCurrentPage = async () => {
+      if (!isMounted) return
+      
       try {
         setLoading(true)
         setError(null)
         const task = await renderPage(pdfDoc, currentPage, canvasRef.current!, scale, rotation)
+        
+        if (!isMounted) {
+          task.cancel()
+          return
+        }
+        
         renderTaskRef.current = task
         await task.promise
-        onPageChange?.(currentPage, totalPages)
+        
+        if (!isMounted) return
+        
+        // Only call onPageChange once after successful render
+        if (onPageChange && totalPages > 0) {
+          onPageChange(currentPage, totalPages)
+        }
         renderTaskRef.current = null
+        setLoading(false)
       } catch (err: any) {
+        if (!isMounted) return
+        
         // Ignore cancellation errors
         if (err?.name === 'RenderingCancelledException' || err?.message?.includes('cancelled') || err?.message?.includes('cancel')) {
-          console.log('Render cancelled (expected when changing pages)')
           return
         }
         console.error('Error rendering page:', err)
         setError('Failed to render page. Please try again.')
         renderTaskRef.current = null
-      } finally {
         setLoading(false)
       }
     }
@@ -110,6 +133,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
 
     // Cleanup: cancel render on unmount or when dependencies change
     return () => {
+      isMounted = false
       if (renderTaskRef.current) {
         try {
           renderTaskRef.current.cancel()
@@ -119,7 +143,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
         renderTaskRef.current = null
       }
     }
-  }, [pdfDoc, currentPage, scale, rotation, totalPages, onPageChange])
+  }, [pdfDoc, currentPage, scale, rotation, totalPages]) // Removed onPageChange from deps
 
   // Update internal state when external props change
   useEffect(() => {
@@ -131,9 +155,9 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
   useEffect(() => {
     if (externalScale !== undefined && externalScale !== internalScale) {
       setInternalScale(externalScale)
-      onScaleChange?.(externalScale)
+      // Don't call onScaleChange here to avoid loops - it's handled by parent
     }
-  }, [externalScale, internalScale, onScaleChange])
+  }, [externalScale, internalScale]) // Removed onScaleChange from deps
 
   if (loading && !pdfDoc) {
     return (
@@ -170,11 +194,15 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
 
   return (
     <div className="flex-1 overflow-auto bg-background-light dark:bg-[#0f1115] relative p-2 md:p-4 lg:p-8 flex justify-center">
-      {loading && (
+      {loading && pdfDoc && (
         <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 bg-white dark:bg-slate-800 px-4 py-2 rounded-lg shadow-lg">
-          <p className="text-sm text-slate-600 dark:text-slate-400">Rendering page...</p>
+          <div className="flex items-center gap-2">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+            <p className="text-sm text-slate-600 dark:text-slate-400">Rendering...</p>
+          </div>
         </div>
       )}
+      
       <div className="w-full max-w-full md:max-w-[600px] lg:max-w-[850px]">
         <canvas
           ref={canvasRef}
