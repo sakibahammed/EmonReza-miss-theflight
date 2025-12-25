@@ -9,7 +9,7 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ 
-  title = 'PDF Editor', 
+  title = 'Edit Free', 
   showNav = false,
   showLogout = false 
 }) => {

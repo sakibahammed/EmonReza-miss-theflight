@@ -14,15 +14,15 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display text-[#111318] dark:text-white h-screen overflow-hidden flex">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white dark:bg-[#1a202c] border-r border-[#f0f2f4] dark:border-gray-700 flex flex-col justify-between flex-shrink-0 z-20">
+      {/* Sidebar - Hidden on mobile, visible on iPad+ */}
+      <aside className="hidden md:flex w-64 bg-white dark:bg-[#1a202c] border-r border-[#f0f2f4] dark:border-gray-700 flex-col justify-between flex-shrink-0 z-20">
         <div className="flex flex-col p-4 gap-6 h-full overflow-y-auto">
           {/* Logo */}
-          <div className="flex items-center gap-3 px-2">
-            <div className="bg-primary/10 flex items-center justify-center rounded-lg size-10 text-primary">
+          <div className="flex items-center gap-2 md:gap-3 px-2">
+            <div className="bg-primary/10 flex items-center justify-center rounded-lg size-8 md:size-10 text-primary shrink-0">
               <Icon name="description" filled />
             </div>
-            <h1 className="text-[#111318] dark:text-white text-lg font-bold leading-normal">PDF Editor</h1>
+            <h1 className="text-[#111318] dark:text-white text-sm md:text-lg font-bold leading-normal truncate">Edit Free</h1>
           </div>
           
           {/* New PDF Button */}
@@ -86,11 +86,14 @@ const Dashboard: React.FC = () => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-full min-w-0 overflow-hidden relative">
         {/* Top Header */}
-        <header className="flex items-center justify-between px-8 py-4 bg-white dark:bg-[#1a202c] border-b border-[#f0f2f4] dark:border-gray-700">
-          <h2 className="text-[#111318] dark:text-white text-lg font-bold leading-tight hidden md:block">Overview</h2>
-          <div className="flex flex-1 justify-end items-center gap-4 md:gap-6">
-            {/* Search */}
-            <label className="flex flex-col min-w-40 h-10 max-w-sm w-full relative">
+        <header className="flex items-center justify-between px-3 md:px-6 lg:px-8 py-3 md:py-4 bg-white dark:bg-[#1a202c] border-b border-[#f0f2f4] dark:border-gray-700">
+          <h2 className="text-[#111318] dark:text-white text-base md:text-lg font-bold leading-tight hidden md:block">Overview</h2>
+          <div className="flex flex-1 justify-end items-center gap-2 md:gap-4 lg:gap-6">
+            {/* Search - Hidden on mobile, icon button on mobile */}
+            <button className="md:hidden flex items-center justify-center rounded-lg size-9 hover:bg-[#f0f2f4] dark:hover:bg-gray-800 text-[#616f89] dark:text-gray-400 transition-colors">
+              <Icon name="search" />
+            </button>
+            <label className="hidden md:flex flex-col min-w-40 h-10 max-w-sm w-full relative">
               <div className="flex w-full flex-1 items-stretch rounded-lg h-full bg-[#f0f2f4] dark:bg-gray-800 transition-all focus-within:ring-2 focus-within:ring-primary/20">
                 <div className="text-[#616f89] dark:text-gray-400 flex items-center justify-center pl-3">
                   <Icon name="search" />
@@ -102,24 +105,24 @@ const Dashboard: React.FC = () => {
               </div>
             </label>
             {/* Icons */}
-            <button className="flex items-center justify-center rounded-lg size-10 hover:bg-[#f0f2f4] dark:hover:bg-gray-800 text-[#616f89] dark:text-gray-400 transition-colors">
+            <button className="flex items-center justify-center rounded-lg size-9 md:size-10 hover:bg-[#f0f2f4] dark:hover:bg-gray-800 text-[#616f89] dark:text-gray-400 transition-colors">
               <Icon name="notifications" />
             </button>
             {/* Profile */}
             <div 
-              className="size-10 rounded-full bg-cover bg-center border border-gray-200 dark:border-gray-700"
+              className="size-9 md:size-10 rounded-full bg-cover bg-center border border-gray-200 dark:border-gray-700 shrink-0"
               style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuByxf06lrOMTqr5OJgD55cjkbwEEGwW-txkkFZz4QLqG-3F7XUr6KCciB-qq2ntFnigRU9oERkqAm3KiS3mvRloiIUoMLvVhZZYYfONQj2n1DtMknoND5yR67vKoHlAst_tCTUIXe3txaVUP9MVnPEd3HCH4HB3kxBVLUOo5K7-HKKdG6kTJE7mBeN0QzyY2o09_NpapLA5S7Inae-qn0MhIzy6ALq3uVdm1C9xC6f1415UCACdOa6r7SqTquLDFkWWs3BRm5F61S0G")' }}
             />
           </div>
         </header>
 
         {/* Scrollable Dashboard Content */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-8">
+        <div className="flex-1 overflow-y-auto p-3 md:p-4 lg:p-8 space-y-6 md:space-y-8">
           {/* Greeting & Hero Upload */}
-          <section className="max-w-5xl mx-auto w-full flex flex-col gap-6">
+          <section className="max-w-5xl mx-auto w-full flex flex-col gap-4 md:gap-6">
             <div>
-              <h1 className="text-[#111318] dark:text-white tracking-tight text-3xl font-bold leading-tight">Good Morning, Alex</h1>
-              <p className="text-[#616f89] dark:text-gray-400 text-base font-normal leading-normal mt-2">
+              <h1 className="text-[#111318] dark:text-white tracking-tight text-xl md:text-2xl lg:text-3xl font-bold leading-tight">Good Morning, Alex</h1>
+              <p className="text-[#616f89] dark:text-gray-400 text-sm md:text-base font-normal leading-normal mt-1 md:mt-2">
                 Manage your documents efficiently. What would you like to do today?
               </p>
             </div>
@@ -127,16 +130,16 @@ const Dashboard: React.FC = () => {
             {/* Upload Area */}
             <div 
               onClick={() => navigate('/edit')}
-              className="flex flex-col items-center justify-center gap-6 rounded-xl border-2 border-dashed border-[#dbdfe6] dark:border-gray-700 bg-white dark:bg-[#1a202c] px-6 py-12 hover:border-primary/50 transition-colors group cursor-pointer shadow-sm"
+              className="flex flex-col items-center justify-center gap-4 md:gap-6 rounded-xl border-2 border-dashed border-[#dbdfe6] dark:border-gray-700 bg-white dark:bg-[#1a202c] px-4 md:px-6 py-8 md:py-12 hover:border-primary/50 transition-colors group cursor-pointer shadow-sm"
             >
-              <div className="p-4 rounded-full bg-blue-50 dark:bg-blue-900/20 text-primary group-hover:scale-110 transition-transform duration-300">
-                <Icon name="cloud_upload" className="text-4xl" />
+              <div className="p-3 md:p-4 rounded-full bg-blue-50 dark:bg-blue-900/20 text-primary group-hover:scale-110 transition-transform duration-300">
+                <Icon name="cloud_upload" className="text-3xl md:text-4xl" />
               </div>
               <div className="flex max-w-[480px] flex-col items-center gap-2">
-                <p className="text-[#111318] dark:text-white text-lg font-bold leading-tight text-center">Upload new document</p>
-                <p className="text-[#616f89] dark:text-gray-400 text-sm text-center">Drag & drop PDF files here, or click to browse</p>
+                <p className="text-[#111318] dark:text-white text-base md:text-lg font-bold leading-tight text-center">Upload new document</p>
+                <p className="text-[#616f89] dark:text-gray-400 text-xs md:text-sm text-center px-2">Drag & drop PDF files here, or click to browse</p>
               </div>
-              <button className="flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-10 px-6 bg-primary hover:bg-blue-700 text-white text-sm font-bold shadow-md transition-all">
+              <button className="flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-9 md:h-10 px-4 md:px-6 bg-primary hover:bg-blue-700 text-white text-xs md:text-sm font-bold shadow-md transition-all">
                 Browse Files
               </button>
             </div>
@@ -144,52 +147,52 @@ const Dashboard: React.FC = () => {
 
           {/* Quick Actions */}
           <section className="max-w-5xl mx-auto w-full">
-            <h3 className="text-[#111318] dark:text-white text-lg font-bold mb-4">Quick Tools</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <h3 className="text-[#111318] dark:text-white text-base md:text-lg font-bold mb-3 md:mb-4">Quick Tools</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
               <button 
                 onClick={() => navigate('/merge')}
-                className="flex flex-col items-center justify-center gap-3 p-6 rounded-xl bg-white dark:bg-[#1a202c] border border-[#f0f2f4] dark:border-gray-700 hover:border-primary hover:shadow-md transition-all group text-left"
+                className="flex flex-col items-center justify-center gap-2 md:gap-3 p-4 md:p-6 rounded-xl bg-white dark:bg-[#1a202c] border border-[#f0f2f4] dark:border-gray-700 hover:border-primary hover:shadow-md transition-all group"
               >
-                <div className="p-3 rounded-lg bg-orange-50 dark:bg-orange-900/20 text-orange-600 group-hover:bg-orange-100 dark:group-hover:bg-orange-900/30 transition-colors">
-                  <Icon name="merge" />
+                <div className="p-2 md:p-3 rounded-lg bg-orange-50 dark:bg-orange-900/20 text-orange-600 group-hover:bg-orange-100 dark:group-hover:bg-orange-900/30 transition-colors">
+                  <Icon name="merge" className="text-lg md:text-xl" />
                 </div>
-                <span className="text-sm font-semibold text-[#111318] dark:text-white">Merge PDF</span>
+                <span className="text-xs md:text-sm font-semibold text-[#111318] dark:text-white text-center">Merge PDF</span>
               </button>
-              <button className="flex flex-col items-center justify-center gap-3 p-6 rounded-xl bg-white dark:bg-[#1a202c] border border-[#f0f2f4] dark:border-gray-700 hover:border-primary hover:shadow-md transition-all group text-left">
-                <div className="p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 text-purple-600 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/30 transition-colors">
-                  <Icon name="transform" />
+              <button className="flex flex-col items-center justify-center gap-2 md:gap-3 p-4 md:p-6 rounded-xl bg-white dark:bg-[#1a202c] border border-[#f0f2f4] dark:border-gray-700 hover:border-primary hover:shadow-md transition-all group">
+                <div className="p-2 md:p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 text-purple-600 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/30 transition-colors">
+                  <Icon name="transform" className="text-lg md:text-xl" />
                 </div>
-                <span className="text-sm font-semibold text-[#111318] dark:text-white">Convert to Word</span>
+                <span className="text-xs md:text-sm font-semibold text-[#111318] dark:text-white text-center">Convert to Word</span>
               </button>
-              <button className="flex flex-col items-center justify-center gap-3 p-6 rounded-xl bg-white dark:bg-[#1a202c] border border-[#f0f2f4] dark:border-gray-700 hover:border-primary hover:shadow-md transition-all group text-left">
-                <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-600 group-hover:bg-green-100 dark:group-hover:bg-green-900/30 transition-colors">
-                  <Icon name="compress" />
+              <button className="flex flex-col items-center justify-center gap-2 md:gap-3 p-4 md:p-6 rounded-xl bg-white dark:bg-[#1a202c] border border-[#f0f2f4] dark:border-gray-700 hover:border-primary hover:shadow-md transition-all group">
+                <div className="p-2 md:p-3 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-600 group-hover:bg-green-100 dark:group-hover:bg-green-900/30 transition-colors">
+                  <Icon name="compress" className="text-lg md:text-xl" />
                 </div>
-                <span className="text-sm font-semibold text-[#111318] dark:text-white">Compress PDF</span>
+                <span className="text-xs md:text-sm font-semibold text-[#111318] dark:text-white text-center">Compress PDF</span>
               </button>
-              <button className="flex flex-col items-center justify-center gap-3 p-6 rounded-xl bg-white dark:bg-[#1a202c] border border-[#f0f2f4] dark:border-gray-700 hover:border-primary hover:shadow-md transition-all group text-left">
-                <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors">
-                  <Icon name="signature" />
+              <button className="flex flex-col items-center justify-center gap-2 md:gap-3 p-4 md:p-6 rounded-xl bg-white dark:bg-[#1a202c] border border-[#f0f2f4] dark:border-gray-700 hover:border-primary hover:shadow-md transition-all group">
+                <div className="p-2 md:p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors">
+                  <Icon name="signature" className="text-lg md:text-xl" />
                 </div>
-                <span className="text-sm font-semibold text-[#111318] dark:text-white">eSign PDF</span>
+                <span className="text-xs md:text-sm font-semibold text-[#111318] dark:text-white text-center">eSign PDF</span>
               </button>
             </div>
           </section>
 
           {/* Recent Files */}
-          <section className="max-w-5xl mx-auto w-full pb-10">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[#111318] dark:text-white text-lg font-bold">Recent Documents</h3>
-              <button className="text-sm font-medium text-primary hover:underline">View All</button>
+          <section className="max-w-5xl mx-auto w-full pb-6 md:pb-10">
+            <div className="flex items-center justify-between mb-3 md:mb-4">
+              <h3 className="text-[#111318] dark:text-white text-base md:text-lg font-bold">Recent Documents</h3>
+              <button className="text-xs md:text-sm font-medium text-primary hover:underline">View All</button>
             </div>
-            <div className="bg-white dark:bg-[#1a202c] rounded-xl border border-[#f0f2f4] dark:border-gray-700 overflow-hidden shadow-sm">
-              <table className="w-full text-left border-collapse">
+            <div className="bg-white dark:bg-[#1a202c] rounded-xl border border-[#f0f2f4] dark:border-gray-700 overflow-hidden shadow-sm overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-[400px]">
                 <thead>
                   <tr className="bg-[#f8f9fa] dark:bg-gray-800 border-b border-[#f0f2f4] dark:border-gray-700 text-xs uppercase text-[#616f89] dark:text-gray-400">
-                    <th className="px-6 py-4 font-semibold tracking-wider">Name</th>
-                    <th className="px-6 py-4 font-semibold tracking-wider hidden sm:table-cell">Date Modified</th>
-                    <th className="px-6 py-4 font-semibold tracking-wider hidden md:table-cell">Size</th>
-                    <th className="px-6 py-4 font-semibold tracking-wider text-right">Actions</th>
+                    <th className="px-3 md:px-4 lg:px-6 py-3 md:py-4 font-semibold tracking-wider">Name</th>
+                    <th className="px-3 md:px-4 lg:px-6 py-3 md:py-4 font-semibold tracking-wider hidden sm:table-cell">Date Modified</th>
+                    <th className="px-3 md:px-4 lg:px-6 py-3 md:py-4 font-semibold tracking-wider hidden md:table-cell">Size</th>
+                    <th className="px-3 md:px-4 lg:px-6 py-3 md:py-4 font-semibold tracking-wider text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#f0f2f4] dark:divide-gray-700">
@@ -199,31 +202,31 @@ const Dashboard: React.FC = () => {
                       onClick={() => navigate('/edit')}
                       className="group hover:bg-[#f8f9fa] dark:hover:bg-gray-800/50 transition-colors cursor-pointer"
                     >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
+                      <td className="px-3 md:px-4 lg:px-6 py-3 md:py-4">
+                        <div className="flex items-center gap-2 md:gap-3">
                           {file.name.endsWith('.pdf') ? (
-                            <div className="bg-red-50 dark:bg-red-900/20 text-red-600 rounded p-1.5 flex items-center justify-center">
-                              <Icon name="picture_as_pdf" className="text-[20px]" />
+                            <div className="bg-red-50 dark:bg-red-900/20 text-red-600 rounded p-1 md:p-1.5 flex items-center justify-center shrink-0">
+                              <Icon name="picture_as_pdf" className="text-base md:text-[20px]" />
                             </div>
                           ) : (
-                            <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded p-1.5 flex items-center justify-center">
-                              <Icon name="description" className="text-[20px]" />
+                            <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded p-1 md:p-1.5 flex items-center justify-center shrink-0">
+                              <Icon name="description" className="text-base md:text-[20px]" />
                             </div>
                           )}
-                          <div>
-                            <p className="text-sm font-medium text-[#111318] dark:text-white">{file.name}</p>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs md:text-sm font-medium text-[#111318] dark:text-white truncate">{file.name}</p>
                             <p className="text-xs text-[#616f89] dark:text-gray-500 sm:hidden">{file.time}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-[#616f89] dark:text-gray-400 hidden sm:table-cell">{file.date}</td>
-                      <td className="px-6 py-4 text-sm text-[#616f89] dark:text-gray-400 hidden md:table-cell">{file.size}</td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-3 md:px-4 lg:px-6 py-3 md:py-4 text-xs md:text-sm text-[#616f89] dark:text-gray-400 hidden sm:table-cell">{file.date}</td>
+                      <td className="px-3 md:px-4 lg:px-6 py-3 md:py-4 text-xs md:text-sm text-[#616f89] dark:text-gray-400 hidden md:table-cell">{file.size}</td>
+                      <td className="px-3 md:px-4 lg:px-6 py-3 md:py-4 text-right">
                         <button 
                           onClick={(e) => { e.stopPropagation(); }}
                           className="text-[#616f89] dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-full transition-colors"
                         >
-                          <Icon name="more_vert" className="text-[20px]" />
+                          <Icon name="more_vert" className="text-base md:text-[20px]" />
                         </button>
                       </td>
                     </tr>

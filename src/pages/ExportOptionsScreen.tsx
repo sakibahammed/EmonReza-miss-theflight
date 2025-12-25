@@ -10,51 +10,51 @@ const ExportOptionsScreen: React.FC = () => {
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display text-[#111318] dark:text-white min-h-screen flex flex-col overflow-x-hidden">
-      <Header title="PDF Editor" showNav showLogout />
+      <Header title="Edit Free" showNav showLogout />
       
       {/* Main Content Area */}
-      <main className="flex-grow flex justify-center py-8 px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <main className="flex-grow flex justify-center py-4 md:py-6 lg:py-8 px-3 md:px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 lg:gap-8">
           {/* Left Panel: Configuration */}
-          <div className="lg:col-span-7 flex flex-col gap-6">
+          <div className="lg:col-span-7 flex flex-col gap-4 md:gap-6">
             {/* Page Heading */}
-            <div className="flex flex-col gap-2">
-              <h1 className="text-[#111318] dark:text-white tracking-tight text-[32px] font-bold leading-tight">
+            <div className="flex flex-col gap-1 md:gap-2">
+              <h1 className="text-[#111318] dark:text-white tracking-tight text-xl md:text-2xl lg:text-[32px] font-bold leading-tight">
                 Export Document
               </h1>
-              <p className="text-[#616f89] dark:text-gray-400 text-sm font-normal leading-normal">
+              <p className="text-[#616f89] dark:text-gray-400 text-xs md:text-sm font-normal leading-normal">
                 Configure your settings and choose a format to save your document.
               </p>
             </div>
 
             {/* Format Selection */}
-            <section className="flex flex-col gap-4">
-              <h3 className="text-base font-semibold text-[#111318] dark:text-white">Select Format</h3>
+            <section className="flex flex-col gap-3 md:gap-4">
+              <h3 className="text-sm md:text-base font-semibold text-[#111318] dark:text-white">Select Format</h3>
               
               {/* PDF (Selected) */}
               <div 
                 onClick={() => setSelectedFormat('pdf')}
-                className={`group cursor-pointer relative flex items-stretch justify-between gap-4 rounded-xl bg-white dark:bg-gray-900 p-4 shadow-sm border-2 transition-all ${
+                className={`group cursor-pointer relative flex items-stretch justify-between gap-3 md:gap-4 rounded-lg md:rounded-xl bg-white dark:bg-gray-900 p-3 md:p-4 shadow-sm border-2 transition-all ${
                   selectedFormat === 'pdf' ? 'border-primary' : 'border-transparent ring-1 ring-gray-200 dark:ring-gray-800 hover:border-gray-300 dark:hover:border-gray-700'
                 }`}
               >
                 {selectedFormat === 'pdf' && (
-                  <div className="absolute top-4 right-4 text-primary">
-                    <Icon name="check_circle" filled />
+                  <div className="absolute top-3 md:top-4 right-3 md:right-4 text-primary">
+                    <Icon name="check_circle" filled className="text-lg md:text-xl" />
                   </div>
                 )}
                 {selectedFormat !== 'pdf' && (
-                  <div className="absolute top-4 right-4 text-gray-300 dark:text-gray-600 group-hover:text-primary transition-colors">
-                    <Icon name="radio_button_unchecked" />
+                  <div className="absolute top-3 md:top-4 right-3 md:right-4 text-gray-300 dark:text-gray-600 group-hover:text-primary transition-colors">
+                    <Icon name="radio_button_unchecked" className="text-lg md:text-xl" />
                   </div>
                 )}
-                <div className="flex items-start gap-4">
-                  <div className="flex items-center justify-center size-12 rounded-lg bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 shrink-0">
-                    <Icon name="picture_as_pdf" className="text-2xl" />
+                <div className="flex items-start gap-3 md:gap-4">
+                  <div className="flex items-center justify-center size-10 md:size-12 rounded-lg bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 shrink-0">
+                    <Icon name="picture_as_pdf" className="text-xl md:text-2xl" />
                   </div>
-                  <div className="flex flex-col gap-1 pr-8">
-                    <p className="text-[#111318] dark:text-white text-base font-bold leading-tight">Standard PDF</p>
-                    <p className="text-[#616f89] dark:text-gray-400 text-sm font-normal leading-normal">
+                  <div className="flex flex-col gap-1 pr-6 md:pr-8 min-w-0 flex-1">
+                    <p className="text-[#111318] dark:text-white text-sm md:text-base font-bold leading-tight">Standard PDF</p>
+                    <p className="text-[#616f89] dark:text-gray-400 text-xs md:text-sm font-normal leading-normal">
                       Best for sharing and printing. Preserves all formatting and layout exactly as seen.
                     </p>
                   </div>
@@ -64,27 +64,27 @@ const ExportOptionsScreen: React.FC = () => {
               {/* Word (Unselected) */}
               <div 
                 onClick={() => setSelectedFormat('word')}
-                className={`group cursor-pointer relative flex items-stretch justify-between gap-4 rounded-xl bg-white dark:bg-gray-900 p-4 shadow-sm border-2 transition-all ${
+                className={`group cursor-pointer relative flex items-stretch justify-between gap-3 md:gap-4 rounded-lg md:rounded-xl bg-white dark:bg-gray-900 p-3 md:p-4 shadow-sm border-2 transition-all ${
                   selectedFormat === 'word' ? 'border-primary' : 'border-transparent ring-1 ring-gray-200 dark:ring-gray-800 hover:border-gray-300 dark:hover:border-gray-700'
                 }`}
               >
                 {selectedFormat === 'word' && (
-                  <div className="absolute top-4 right-4 text-primary">
-                    <Icon name="check_circle" filled />
+                  <div className="absolute top-3 md:top-4 right-3 md:right-4 text-primary">
+                    <Icon name="check_circle" filled className="text-lg md:text-xl" />
                   </div>
                 )}
                 {selectedFormat !== 'word' && (
-                  <div className="absolute top-4 right-4 text-gray-300 dark:text-gray-600 group-hover:text-primary transition-colors">
-                    <Icon name="radio_button_unchecked" />
+                  <div className="absolute top-3 md:top-4 right-3 md:right-4 text-gray-300 dark:text-gray-600 group-hover:text-primary transition-colors">
+                    <Icon name="radio_button_unchecked" className="text-lg md:text-xl" />
                   </div>
                 )}
-                <div className="flex items-start gap-4">
-                  <div className="flex items-center justify-center size-12 rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 shrink-0">
-                    <Icon name="description" className="text-2xl" />
+                <div className="flex items-start gap-3 md:gap-4">
+                  <div className="flex items-center justify-center size-10 md:size-12 rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 shrink-0">
+                    <Icon name="description" className="text-xl md:text-2xl" />
                   </div>
-                  <div className="flex flex-col gap-1 pr-8">
-                    <p className="text-[#111318] dark:text-white text-base font-bold leading-tight">Microsoft Word (.docx)</p>
-                    <p className="text-[#616f89] dark:text-gray-400 text-sm font-normal leading-normal">
+                  <div className="flex flex-col gap-1 pr-6 md:pr-8 min-w-0 flex-1">
+                    <p className="text-[#111318] dark:text-white text-sm md:text-base font-bold leading-tight">Microsoft Word (.docx)</p>
+                    <p className="text-[#616f89] dark:text-gray-400 text-xs md:text-sm font-normal leading-normal">
                       Best for editing text. Layout may vary slightly from the original document.
                     </p>
                   </div>
@@ -93,44 +93,44 @@ const ExportOptionsScreen: React.FC = () => {
             </section>
 
             {/* File Details Form */}
-            <section className="flex flex-col gap-5 bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm ring-1 ring-gray-200 dark:ring-gray-800">
-              <h3 className="text-base font-semibold text-[#111318] dark:text-white">File Configuration</h3>
-              <div className="grid gap-5">
+            <section className="flex flex-col gap-4 md:gap-5 bg-white dark:bg-gray-900 p-4 md:p-6 rounded-lg md:rounded-xl shadow-sm ring-1 ring-gray-200 dark:ring-gray-800">
+              <h3 className="text-sm md:text-base font-semibold text-[#111318] dark:text-white">File Configuration</h3>
+              <div className="grid gap-4 md:gap-5">
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-[#111318] dark:text-gray-300" htmlFor="filename">
+                  <label className="text-xs md:text-sm font-medium text-[#111318] dark:text-gray-300" htmlFor="filename">
                     File Name
                   </label>
                   <div className="relative">
                     <input
-                      className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm text-[#111318] dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow pr-16"
+                      className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm text-[#111318] dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow pr-12 md:pr-16"
                       id="filename"
                       type="text"
                       value={filename}
                       onChange={(e) => setFilename(e.target.value)}
                     />
-                    <span className="absolute right-4 top-2.5 text-sm text-gray-400 pointer-events-none">
+                    <span className="absolute right-3 md:right-4 top-2 md:top-2.5 text-xs md:text-sm text-gray-400 pointer-events-none">
                       .{selectedFormat === 'pdf' ? 'pdf' : 'docx'}
                     </span>
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-[#111318] dark:text-gray-300" htmlFor="location">
+                  <label className="text-xs md:text-sm font-medium text-[#111318] dark:text-gray-300" htmlFor="location">
                     Save Location
                   </label>
                   <div className="flex gap-2">
-                    <div className="relative flex-1">
-                      <div className="absolute left-3 top-2.5 text-gray-400">
-                        <Icon name="folder_open" className="text-[20px]" />
+                    <div className="relative flex-1 min-w-0">
+                      <div className="absolute left-2 md:left-3 top-2 md:top-2.5 text-gray-400">
+                        <Icon name="folder_open" className="text-base md:text-[20px]" />
                       </div>
                       <input
-                        className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 pl-10 pr-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 outline-none cursor-default"
+                        className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 pl-8 md:pl-10 pr-3 md:pr-4 py-2 md:py-2.5 text-xs md:text-sm text-gray-600 dark:text-gray-300 outline-none cursor-default truncate"
                         id="location"
                         readOnly
                         type="text"
                         value="/Documents/Work/Reports"
                       />
                     </div>
-                    <button className="shrink-0 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 px-4 py-2.5 text-sm font-medium text-[#111318] dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <button className="shrink-0 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm font-medium text-[#111318] dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                       Browse...
                     </button>
                   </div>
@@ -176,20 +176,20 @@ const ExportOptionsScreen: React.FC = () => {
             </section>
 
             {/* Action Bar */}
-            <div className="mt-4 pt-6 border-t border-gray-200 dark:border-gray-800 flex items-center justify-end gap-4">
-              <button className="px-6 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+            <div className="mt-3 md:mt-4 pt-4 md:pt-6 border-t border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 md:gap-4">
+              <button className="w-full sm:w-auto px-4 md:px-6 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                 Cancel
               </button>
-              <button className="flex items-center gap-2 px-8 py-2.5 rounded-lg bg-primary hover:bg-blue-700 text-white text-sm font-bold shadow-md shadow-blue-500/20 transition-all">
+              <button className="flex items-center justify-center gap-2 px-6 md:px-8 py-2 md:py-2.5 rounded-lg bg-primary hover:bg-blue-700 text-white text-xs md:text-sm font-bold shadow-md shadow-blue-500/20 transition-all">
                 <span>Export Document</span>
-                <Icon name="arrow_forward" className="text-[18px]" />
+                <Icon name="arrow_forward" className="text-base md:text-[18px]" />
               </button>
             </div>
           </div>
 
           {/* Right Panel: Preview */}
           <div className="lg:col-span-5 flex flex-col gap-4">
-            <div className="sticky top-24 bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm ring-1 ring-gray-200 dark:ring-gray-800 h-fit">
+            <div className="sticky top-20 md:top-24 bg-white dark:bg-gray-900 p-3 md:p-4 rounded-lg md:rounded-xl shadow-sm ring-1 ring-gray-200 dark:ring-gray-800 h-fit">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="text-sm font-semibold text-[#111318] dark:text-white">Preview</h4>
                 <span className="text-xs font-medium text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
@@ -197,8 +197,8 @@ const ExportOptionsScreen: React.FC = () => {
                 </span>
               </div>
               {/* Document Visual */}
-              <div className="w-full bg-[#e5e7eb] dark:bg-[#1a202c] rounded-lg p-4 flex justify-center items-center min-h-[400px] overflow-hidden relative group/preview">
-                <div className="w-[80%] aspect-[1/1.414] bg-white shadow-lg transition-transform duration-300 group-hover/preview:scale-[1.02] flex flex-col overflow-hidden relative">
+              <div className="w-full bg-[#e5e7eb] dark:bg-[#1a202c] rounded-lg p-2 md:p-4 flex justify-center items-center min-h-[250px] md:min-h-[350px] lg:min-h-[400px] overflow-hidden relative group/preview">
+                <div className="w-[80%] max-w-[300px] md:max-w-none aspect-[1/1.414] bg-white shadow-lg transition-transform duration-300 group-hover/preview:scale-[1.02] flex flex-col overflow-hidden relative">
                   {/* Header Area */}
                   <div className="h-16 w-full bg-slate-50 border-b border-slate-100 p-4 flex items-center gap-3">
                     <div className="h-8 w-8 rounded-full bg-primary/20"></div>
